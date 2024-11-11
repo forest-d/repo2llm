@@ -19,6 +19,7 @@ FORMATTERS = {
     '.json': JSONFormatter(),
     '.toml': TOMLFormatter(),
     '.yaml': YAMLFormatter(),
+    '.yml': YAMLFormatter(),
     '.md': MarkdownFormatter(),
 }
 
