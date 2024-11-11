@@ -1,6 +1,6 @@
 # repo2llm
 
-A simple tool to prepare repository contents for sharing with LLMs through your clipboard. Automatically formats your code files with proper file paths and supports multiple languages.
+A simple tool to copy repository contents to your clipboard, useful for pasting into an LLM like Claude or ChatGPT.
 
 ## Features
 
