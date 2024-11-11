@@ -31,17 +31,10 @@ jobs:
       run: |
         poetry install
 
-    - name: Check formatting with black
+    - name: Check formatting and lint with Ruff
       run: |
-        poetry run black . --check
-
-    - name: Check imports with isort
-      run: |
-        poetry run isort . --check-only
-
-    - name: Type checking with mypy
-      run: |
-        poetry run mypy repo2llm
+        poetry run ruff check .
+        poetry run ruff format . --check
 
     - name: Run tests with pytest
       run: |
