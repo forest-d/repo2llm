@@ -1,10 +1,19 @@
+[build-system]
+requires = [ "poetry-core",]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "repo2llm"
-version = "0.1.0"
+version = "0.2.0"
 description = "A tool to easily share repository contents with LLMs through the clipboard."
-authors = ["Forest Dussault <forestdussault@gmail.com>"]
+authors = [ "Forest Dussault <forestdussault@gmail.com>",]
 readme = "README.md"
-packages = [{include = "repo2llm"}]
+[[tool.poetry.packages]]
+include = "repo2llm"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -13,38 +22,19 @@ pyperclip = "^1.9.0"
 pydantic = "^2.9.2"
 rich = "^13.9.4"
 
+[tool.poetry.scripts]
+repo2llm = "repo2llm.cli:main"
+
+[tool.ruff.lint]
+select = [ "E", "F", "I", "B", "C4", "UP", "RUF", "W",]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
 ruff = "^0.7.3"
 pre-commit = "4.0.1"
 toml = "0.10.2"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-repo2llm = "repo2llm.cli:main"
-
-[tool.ruff]
-line-length = 120
-target-version = "py311"
-
-[tool.ruff.lint]
-select = [
-    "E",    # pycodestyle errors
-    "F",    # pyflakes
-    "I",    # isort
-    "B",    # flake8-bugbear
-    "C4",   # flake8-comprehensions
-    "UP",   # pyupgrade
-    "RUF",  # ruff-specific rules
-    "W",    # pycodestyle warnings
-]
-
-[tool.ruff.format]
-# Use single quotes for string literals
-quote-style = "single"
-# Indent with 4 spaces
-indent-style = "space"
-skip-magic-trailing-comma = false
