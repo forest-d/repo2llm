@@ -15,9 +15,7 @@ rich = "^13.9.4"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
-black = "^23.11.0"
-isort = "^5.12.0"
-mypy = "^1.7.1"
+ruff = "^0.3.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -26,11 +24,25 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 repo2llm = "repo2llm.cli:main"
 
-[tool.black]
-line-length = 88
-target-version = ['py38']
-include = '\.pyi?$'
+[tool.ruff]
+line-length = 120
+target-version = "py311"
 
-[tool.isort]
-profile = "black"
-multi_line_output = 3
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "UP",   # pyupgrade
+    "RUF",  # ruff-specific rules
+    "W",    # pycodestyle warnings
+]
+
+[tool.ruff.format]
+# Use single quotes for string literals
+quote-style = "single"
+# Indent with 4 spaces
+indent-style = "space"
+skip-magic-trailing-comma = false
