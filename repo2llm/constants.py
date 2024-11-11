@@ -17,4 +17,6 @@ DEFAULT_IGNORE_PATTERNS = {
     '*.sqlite3',
     '*.db',
     'poetry.lock',
+    '.gitignore',
+    '.pre-commit-config.yaml',
 }
