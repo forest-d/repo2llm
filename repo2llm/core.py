@@ -16,9 +16,6 @@ class RepoConfig(BaseModel):
         """Add additional ignore patterns to the existing ones."""
         self.ignore_patterns.update(patterns)
 
-    class Config:
-        arbitrary_types_allowed = True
-
 
 class RepoProcessor:
     """Main class for processing repository contents."""
@@ -109,9 +106,9 @@ class RepoProcessor:
                     self.processed_files_count += 1
 
                 except Exception as e:
-                    output.append(f'<file name="{rel_path}">\n# Error: {e!s}\n</file>')
+                    print(f'{rel_path} error: {e!s}')
 
-        except Exception as e:
-            output.append(f'# Error processing repository: {e!s}\n')
+        except Exception:
+            raise
 
         return '\n\n'.join(output), self.processed_files_count
