@@ -2,15 +2,6 @@
 
 A simple tool to copy repository contents to your clipboard, useful for pasting into an LLM like Claude or ChatGPT.
 
-## Features
-
-- 🚀 Simple command-line interface for easy usage
-- 🔍 Content preview with customizable length
-- 📋 Automatic clipboard integration
-- 💻 Cross-platform support (Windows, macOS, Linux)
-- ⚙️ Configuration file support (`.repo2llm`)
-- 🧹 Built-in default ignore patterns for common files/directories
-
 ## Installation
 
 ```bash
