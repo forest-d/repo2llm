@@ -76,13 +76,10 @@ def main(
         processor = RepoProcessor(repo_config)
         output, file_count = processor.process_repository()
 
-        # Copy to clipboard
         pyperclip.copy(output)
 
-        # Show success message
         console.print(Panel.fit(f'✨ {file_count} files copied to clipboard! ✨', style='green'))
 
-        # Show preview if enabled
         if preview and output:
             preview_text = output[:preview_length]
             if len(output) > preview_length:
