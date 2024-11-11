@@ -28,9 +28,7 @@ console = Console()
     multiple=True,
     help='Only include files matching these patterns (e.g., "*.py", "src/*.ts")',
 )
-@click.option(
-    '--preview/--no-preview', default=True, help='Show preview of copied content'
-)
+@click.option('--preview/--no-preview', default=True, help='Show preview of copied content')
 @click.option('--preview-length', default=200, help='Length of preview in characters')
 def main(
     directory: Path,
@@ -61,9 +59,7 @@ def main(
         pyperclip.copy(output)
 
         # Show success message
-        console.print(
-            Panel.fit('✨ Repository contents copied to clipboard! ✨', style='green')
-        )
+        console.print(Panel.fit('✨ Repository contents copied to clipboard! ✨', style='green'))
 
         # Show preview if enabled
         if preview and output:

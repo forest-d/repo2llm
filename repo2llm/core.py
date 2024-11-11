@@ -10,9 +10,7 @@ class RepoConfig(BaseModel):
     """Configuration for repository processing."""
 
     root_dir: Path
-    ignore_patterns: set[str] = Field(
-        default_factory=lambda: DEFAULT_IGNORE_PATTERNS.copy()
-    )
+    ignore_patterns: set[str] = Field(default_factory=lambda: DEFAULT_IGNORE_PATTERNS.copy())
     include_patterns: set[str] | None = None
 
     def add_ignore_patterns(self, patterns: set[str]) -> None:
@@ -86,10 +84,7 @@ class RepoProcessor:
                 # If include patterns are specified, check if the file matches any
                 if self.config.include_patterns:
                     rel_path = path.relative_to(self.config.root_dir)
-                    if not any(
-                        rel_path.match(pattern)
-                        for pattern in self.config.include_patterns
-                    ):
+                    if not any(rel_path.match(pattern) for pattern in self.config.include_patterns):
                         continue
 
                 try:

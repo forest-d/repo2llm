@@ -87,9 +87,7 @@ def test_repo_config_validation():
     assert '.git' in config.ignore_patterns
 
     # Test with include patterns
-    config = RepoConfig(
-        root_dir=Path('/some/path'), include_patterns={'*.py', 'src/*.ts'}
-    )
+    config = RepoConfig(root_dir=Path('/some/path'), include_patterns={'*.py', 'src/*.ts'})
     assert '*.py' in config.include_patterns
     assert 'src/*.ts' in config.include_patterns
 

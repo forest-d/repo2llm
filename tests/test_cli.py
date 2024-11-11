@@ -105,9 +105,7 @@ def test_cli_error_handling(mock_print, runner, temp_repo):
     def raise_error(*args, **kwargs):
         raise PermissionError('Access denied')
 
-    with patch(
-        'repo2llm.core.RepoProcessor.process_repository', side_effect=raise_error
-    ):
+    with patch('repo2llm.core.RepoProcessor.process_repository', side_effect=raise_error):
         result = runner.invoke(main, [str(temp_repo)])
         assert result.exit_code != 0
         # Check that error message is printed
