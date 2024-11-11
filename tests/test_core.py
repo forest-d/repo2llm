@@ -92,7 +92,7 @@ def test_repo_processor_ignore_patterns(temp_repo: Path):
     config = RepoConfig(root_dir=temp_repo)
     processor = RepoProcessor(config)
 
-    output = processor.process_repository()
+    output, count = processor.process_repository()
 
     # Check that ignored files are not included
     assert 'node_modules' not in output
@@ -119,7 +119,7 @@ def test_repo_processor_file_content(mock_get_formatter, temp_repo: Path):
     config = RepoConfig(root_dir=temp_repo)
     processor = RepoProcessor(config)
 
-    output = processor.process_repository()
+    output, count = processor.process_repository()
 
     # Check that file contents are included with correct formatting
     assert 'def main():' in output
@@ -138,11 +138,9 @@ def test_repo_processor_error_handling(temp_repo: Path):
     config = RepoConfig(root_dir=temp_repo)
     processor = RepoProcessor(config)
 
-    output = processor.process_repository()
+    output, count = processor.process_repository()
 
-    # Check that error message is included in output
-    assert 'Error reading' in output
-    assert 'binary.py' in output
+    assert 'binary.py' not in output
 
     # Check that other files are still processed
     assert 'main.py' in output
@@ -170,7 +168,7 @@ def test_repo_processor_nested_directories(mock_get_formatter, temp_repo: Path):
     config = RepoConfig(root_dir=temp_repo)
     processor = RepoProcessor(config)
 
-    output = processor.process_repository()
+    output, count = processor.process_repository()
 
     # Check that nested files are included with correct paths
     assert '<file name="src/nested/deep/nested.py">' in output
@@ -187,7 +185,7 @@ def test_repo_processor_root_files(temp_repo: Path):
     config = RepoConfig(root_dir=temp_repo)
     processor = RepoProcessor(config)
 
-    output = processor.process_repository()
+    output, count = processor.process_repository()
 
     # Check that root file is included
     assert 'pyproject.toml' in output

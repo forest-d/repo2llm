@@ -42,7 +42,7 @@ def test_cli_default_behavior(runner, mock_pyperclip, temp_repo):
         result = runner.invoke(main, [str(temp_repo)])
 
         assert result.exit_code == 0
-        assert 'Repository contents copied to clipboard!' in result.output
+        assert 'copied to clipboard!' in result.output
         assert mock_pyperclip.copy.called
 
 
@@ -51,7 +51,7 @@ def test_cli_no_preview(runner, mock_pyperclip, temp_repo):
     result = runner.invoke(main, [str(temp_repo), '--no-preview'])
 
     assert result.exit_code == 0
-    assert 'Repository contents copied to clipboard!' in result.output
+    assert 'copied to clipboard!' in result.output
     assert 'Preview of copied content:' not in result.output
 
 

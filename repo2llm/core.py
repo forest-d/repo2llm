@@ -25,9 +25,12 @@ class RepoProcessor:
 
     def __init__(self, config: RepoConfig):
         self.config = config
+
         # Split patterns into directory names and file patterns
         self.dir_ignores = {p for p in config.ignore_patterns if not p.startswith('*')}
         self.file_patterns = {p for p in config.ignore_patterns if p.startswith('*')}
+
+        self.processed_files_count = 0
 
     def _should_ignore(self, path: Path) -> bool:
         """
@@ -63,7 +66,7 @@ class RepoProcessor:
             # Path is outside root_dir
             return True
 
-    def process_repository(self) -> str:
+    def process_repository(self) -> tuple[str, int]:
         """
         Process the repository and return formatted contents.
 
@@ -71,12 +74,12 @@ class RepoProcessor:
             str: Formatted repository contents.
         """
         output: list[str] = []
+        self.processed_files_count = 0
 
         try:
             # Get all files in the repository
             for path in sorted(self.config.root_dir.rglob('*')):
                 rel_path = None
-
                 if not path.is_file() or self._should_ignore(path):
                     continue
 
@@ -89,20 +92,26 @@ class RepoProcessor:
                     if formatter is None:
                         continue
 
-                    # Read and format file content
-                    with open(path, encoding='utf-8') as f:
-                        content = f.read()
+                    # Try to read the file content
+                    try:
+                        with open(path, encoding='utf-8') as f:
+                            content = f.read()
+                    except UnicodeDecodeError:
+                        continue
+                    except Exception:
+                        continue
 
                     formatted_content = formatter.format_content(
                         path=rel_path,
                         content=content,
                     )
                     output.append(formatted_content)
+                    self.processed_files_count += 1
 
                 except Exception as e:
-                    output.append(f'\n# Error reading {rel_path}: {e!s}\n')
+                    output.append(f'<file name="{rel_path}">\n# Error: {e!s}\n</file>')
 
         except Exception as e:
-            output.append(f'\n# Error processing repository: {e!s}\n')
+            output.append(f'# Error processing repository: {e!s}\n')
 
-        return '\n'.join(output)
+        return '\n\n'.join(output), self.processed_files_count
