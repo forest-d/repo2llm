@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "repo2llm"
+version = "0.1.0"
+description = "A tool to easily share repository contents with LLMs through the clipboard."
+authors = ["Forest Dussault <forestdussault@gmail.com>"]
+readme = "README.md"
+packages = [{include = "repo2llm"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+click = "^8.1.7"
+pyperclip = "^1.9.0"
+pydantic = "^2.9.2"
+rich = "^13.9.4"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+black = "^23.11.0"
+isort = "^5.12.0"
+mypy = "^1.7.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+repo2llm = "repo2llm.cli:main"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
