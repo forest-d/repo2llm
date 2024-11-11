@@ -18,7 +18,8 @@ DEFAULT_IGNORE_PATTERNS = {
     '.next',
     '.out',
     '.vercel',
-    '.envs' 'locale',
+    '.envs',
+    'locale',
     'package-lock.json',
     'static',
     # File patterns to ignore
