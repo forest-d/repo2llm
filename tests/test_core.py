@@ -86,11 +86,6 @@ def test_repo_config_validation():
     # Should still have defaults
     assert '.git' in config.ignore_patterns
 
-    # Test with include patterns
-    config = RepoConfig(root_dir=Path('/some/path'), include_patterns={'*.py', 'src/*.ts'})
-    assert '*.py' in config.include_patterns
-    assert 'src/*.ts' in config.include_patterns
-
 
 def test_repo_processor_ignore_patterns(temp_repo: Path):
     """Test that RepoProcessor correctly handles ignore patterns."""
@@ -107,22 +102,6 @@ def test_repo_processor_ignore_patterns(temp_repo: Path):
     assert 'main.py' in output
     assert 'app.ts' in output
     assert 'utils.js' in output
-
-
-def test_repo_processor_include_patterns(temp_repo: Path):
-    """Test that RepoProcessor correctly handles include patterns."""
-    config = RepoConfig(
-        root_dir=temp_repo,
-        include_patterns={'*.py'},  # Only include Python files
-    )
-    processor = RepoProcessor(config)
-
-    output = processor.process_repository()
-
-    # Check that only Python files are included (except __init__.py which is ignored)
-    assert 'main.py' in output
-    assert 'app.ts' not in output
-    assert 'utils.js' not in output
 
 
 @patch('repo2llm.formatters.get_formatter_for_file')

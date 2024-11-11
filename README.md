@@ -2,6 +2,15 @@
 
 A simple tool to prepare repository contents for sharing with LLMs through your clipboard. Automatically formats your code files with proper file paths and supports multiple languages.
 
+## Features
+
+- 🚀 Simple command-line interface for easy usage
+- 🔍 Content preview with customizable length
+- 📋 Automatic clipboard integration
+- 💻 Cross-platform support (Windows, macOS, Linux)
+- ⚙️ Configuration file support (`.repo2llm`)
+- 🧹 Built-in default ignore patterns for common files/directories
+
 ## Installation
 
 ```bash
@@ -10,45 +19,58 @@ pip install repo2llm
 
 ## Usage
 
-Basic usage (from current directory):
+### Basic Usage
 ```bash
+# Process current directory
 repo2llm .
-```
 
-Specify directory:
-```bash
+# Process specific directory
 repo2llm /path/to/your/repo
 ```
 
-With custom ignore patterns:
+### Advanced Options
 ```bash
+# Add custom ignore patterns
 repo2llm . --ignore "*.log" --ignore "temp/*"
-```
 
-Only include specific files:
-```bash
-repo2llm . --include "*.py" --include "src/*.ts"
-```
-
-Disable preview:
-```bash
+# Disable preview
 repo2llm . --no-preview
+
+# Customize preview length
+repo2llm . --preview-length 300
+
+# Use custom config file
+repo2llm . --config my-config.txt
 ```
 
-## Features
+## Configuration
 
-- 🚀 Easy to use CLI interface
-- 📁 Support for Python, JavaScript, and TypeScript files
-- 🎯 Customizable ignore patterns
-- 🎨 Language-specific formatting
-- 📋 Automatic clipboard copy
-- 💻 Cross-platform support (Windows, macOS, Linux)
-- 🔍 Preview support
-- ⚡ Fast and efficient processing
+### Default Ignore Patterns
+The tool automatically ignores common development files and directories. See `repo2llm/constants.py` for the default list.
 
-## Extending
+### Config File
+You can create a `.repo2llm` file in your repository root to specify custom ignore patterns:
 
-To add support for new file types, subclass `BaseFormatter` and add the extension to `FORMATTERS` in `formatters/__init__.py`.
+```text
+# Development directories
+.github/
+.vscode/
+node_modules/
+
+# Build artifacts
+dist/
+build/
+*.pyc
+
+# Custom patterns
+temp/
+*.bak
+```
+
+The config file supports:
+- One pattern per line
+- Comments (lines starting with #)
+
 
 ## Contributing
 
