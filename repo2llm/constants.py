@@ -4,6 +4,7 @@ DEFAULT_IGNORE_PATTERNS = {
     '__pycache__',
     '.pytest_cache',
     'node_modules',
+    'coverage',
     'venv',
     '.venv',
     '.env',
@@ -11,6 +12,16 @@ DEFAULT_IGNORE_PATTERNS = {
     '.idea',
     'build',
     'dist',
+    '.devcontainer',
+    '.production',
+    '.ipython',
+    '.next',
+    '.out',
+    '.vercel',
+    '.envs'
+    'locale',
+    'package-lock.json',
+    'static',
     # File patterns to ignore
     '*.pyc',
     '*.log',
@@ -18,5 +29,8 @@ DEFAULT_IGNORE_PATTERNS = {
     '*.db',
     'poetry.lock',
     '.gitignore',
+    '.dockerignore',
+    '.gitattributes',
     '.pre-commit-config.yaml',
+    '.secret',
 }
