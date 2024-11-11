@@ -1,6 +1,6 @@
+from collections.abc import Generator
 from pathlib import Path
 from textwrap import dedent
-from typing import Generator
 from unittest.mock import patch
 
 import pytest
@@ -12,27 +12,30 @@ from repo2llm.core import RepoConfig, RepoProcessor
 def temp_repo(tmp_path) -> Generator[Path, None, None]:
     """Create a temporary repository with various file types."""
     # Create directory structure
-    src = tmp_path / "src"
+    src = tmp_path / 'src'
     src.mkdir()
-    tests = tmp_path / "tests"
+    tests = tmp_path / 'tests'
     tests.mkdir()
 
     # Create some Python files
-    main_py = src / "main.py"
-    main_py.write_text(dedent("""
+    main_py = src / 'main.py'
+    main_py.write_text(
+        dedent("""
         def main():
             print("Hello, World!")
 
         if __name__ == "__main__":
             main()
-    """).strip())
+    """).strip()
+    )
 
-    init_py = src / "__init__.py"
-    init_py.write_text("")
+    init_py = src / '__init__.py'
+    init_py.write_text('')
 
     # Create some TypeScript files
-    app_ts = src / "app.ts"
-    app_ts.write_text(dedent("""
+    app_ts = src / 'app.ts'
+    app_ts.write_text(
+        dedent("""
         interface User {
             name: string;
             age: number;
@@ -42,24 +45,27 @@ def temp_repo(tmp_path) -> Generator[Path, None, None]:
             name: "John",
             age: 30
         };
-    """).strip())
+    """).strip()
+    )
 
     # Create some JavaScript files
-    utils_js = src / "utils.js"
-    utils_js.write_text(dedent("""
+    utils_js = src / 'utils.js'
+    utils_js.write_text(
+        dedent("""
         function formatDate(date) {
             return new Date(date).toLocaleDateString();
         }
 
         module.exports = { formatDate };
-    """).strip())
+    """).strip()
+    )
 
     # Create some files that should be ignored
-    (tmp_path / "node_modules").mkdir()
-    (tmp_path / "node_modules" / "package.json").write_text("{}")
+    (tmp_path / 'node_modules').mkdir()
+    (tmp_path / 'node_modules' / 'package.json').write_text('{}')
 
-    (tmp_path / ".git").mkdir()
-    (tmp_path / ".git" / "config").write_text("")
+    (tmp_path / '.git').mkdir()
+    (tmp_path / '.git' / 'config').write_text('')
 
     yield tmp_path
 
@@ -67,26 +73,25 @@ def temp_repo(tmp_path) -> Generator[Path, None, None]:
 def test_repo_config_validation():
     """Test RepoConfig validation."""
     # Valid configuration
-    config = RepoConfig(root_dir=Path("/some/path"))
+    config = RepoConfig(root_dir=Path('/some/path'))
     assert isinstance(config.ignore_patterns, set)
-    assert "__pycache__" in config.ignore_patterns
+    assert '__pycache__' in config.ignore_patterns
 
     # Test with custom ignore patterns
-    custom_patterns = {"custom_dir", "*.txt"}
-    config = RepoConfig(root_dir=Path("/some/path"))
+    custom_patterns = {'custom_dir', '*.txt'}
+    config = RepoConfig(root_dir=Path('/some/path'))
     config.add_ignore_patterns(custom_patterns)
-    assert "custom_dir" in config.ignore_patterns
-    assert "*.txt" in config.ignore_patterns
+    assert 'custom_dir' in config.ignore_patterns
+    assert '*.txt' in config.ignore_patterns
     # Should still have defaults
-    assert ".git" in config.ignore_patterns
+    assert '.git' in config.ignore_patterns
 
     # Test with include patterns
     config = RepoConfig(
-        root_dir=Path("/some/path"),
-        include_patterns={"*.py", "src/*.ts"}
+        root_dir=Path('/some/path'), include_patterns={'*.py', 'src/*.ts'}
     )
-    assert "*.py" in config.include_patterns
-    assert "src/*.ts" in config.include_patterns
+    assert '*.py' in config.include_patterns
+    assert 'src/*.ts' in config.include_patterns
 
 
 def test_repo_processor_ignore_patterns(temp_repo: Path):
@@ -97,29 +102,29 @@ def test_repo_processor_ignore_patterns(temp_repo: Path):
     output = processor.process_repository()
 
     # Check that ignored files are not included
-    assert "node_modules" not in output
-    assert ".git" not in output
+    assert 'node_modules' not in output
+    assert '.git' not in output
 
     # Check that non-ignored files are included
-    assert "main.py" in output
-    assert "app.ts" in output
-    assert "utils.js" in output
+    assert 'main.py' in output
+    assert 'app.ts' in output
+    assert 'utils.js' in output
 
 
 def test_repo_processor_include_patterns(temp_repo: Path):
     """Test that RepoProcessor correctly handles include patterns."""
     config = RepoConfig(
         root_dir=temp_repo,
-        include_patterns={"*.py"}  # Only include Python files
+        include_patterns={'*.py'},  # Only include Python files
     )
     processor = RepoProcessor(config)
 
     output = processor.process_repository()
 
     # Check that only Python files are included (except __init__.py which is ignored)
-    assert "main.py" in output
-    assert "app.ts" not in output
-    assert "utils.js" not in output
+    assert 'main.py' in output
+    assert 'app.ts' not in output
+    assert 'utils.js' not in output
 
 
 @patch('repo2llm.formatters.get_formatter_for_file')
@@ -130,7 +135,7 @@ def test_repo_processor_file_content(mock_get_formatter, temp_repo: Path):
     class MockFormatter:
         def format_content(self, path, content):
             path_str = str(path).replace('\\', '/')
-            return f"# {path_str}\n{content}\n"
+            return f'# {path_str}\n{content}\n'
 
     mock_get_formatter.return_value = MockFormatter()
 
@@ -150,7 +155,7 @@ def test_repo_processor_file_content(mock_get_formatter, temp_repo: Path):
 def test_repo_processor_error_handling(temp_repo: Path):
     """Test that RepoProcessor handles errors gracefully."""
     # Create a file that will cause a UnicodeDecodeError
-    binary_file = temp_repo / "src" / "binary.py"
+    binary_file = temp_repo / 'src' / 'binary.py'
     binary_file.write_bytes(bytes([0x80, 0x81, 0x82]))
 
     config = RepoConfig(root_dir=temp_repo)
@@ -159,11 +164,11 @@ def test_repo_processor_error_handling(temp_repo: Path):
     output = processor.process_repository()
 
     # Check that error message is included in output
-    assert "Error reading" in output
-    assert "binary.py" in output
+    assert 'Error reading' in output
+    assert 'binary.py' in output
 
     # Check that other files are still processed
-    assert "main.py" in output
+    assert 'main.py' in output
 
 
 @patch('repo2llm.formatters.get_formatter_for_file')
@@ -179,10 +184,10 @@ def test_repo_processor_nested_directories(mock_get_formatter, temp_repo: Path):
     mock_get_formatter.return_value = MockFormatter()
 
     # Create nested directory structure
-    nested_dir = temp_repo / "src" / "nested" / "deep"
+    nested_dir = temp_repo / 'src' / 'nested' / 'deep'
     nested_dir.mkdir(parents=True)
 
-    nested_file = nested_dir / "nested.py"
+    nested_file = nested_dir / 'nested.py'
     nested_file.write_text("print('I am nested!')")
 
     config = RepoConfig(root_dir=temp_repo)
@@ -195,10 +200,11 @@ def test_repo_processor_nested_directories(mock_get_formatter, temp_repo: Path):
 
     assert "print('I am nested!')" in output
 
+
 def test_repo_processor_root_files(temp_repo: Path):
     """Test that RepoProcessor correctly handles files in the root directory."""
     # Create a file in the root directory
-    root_file = temp_repo / "pyproject.toml"
+    root_file = temp_repo / 'pyproject.toml'
     root_file.write_text("[tool.poetry]\nname = 'test'\nversion = '0.1.0'\n")
 
     config = RepoConfig(root_dir=temp_repo)
@@ -207,5 +213,5 @@ def test_repo_processor_root_files(temp_repo: Path):
     output = processor.process_repository()
 
     # Check that root file is included
-    assert "pyproject.toml" in output
-    assert "[tool.poetry]" in output
+    assert 'pyproject.toml' in output
+    assert '[tool.poetry]' in output

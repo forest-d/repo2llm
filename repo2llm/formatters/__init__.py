@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional
 
 from repo2llm.formatters.base import BaseFormatter
 from repo2llm.formatters.javascript import JavaScriptFormatter
@@ -12,18 +11,18 @@ from repo2llm.formatters.yaml import YAMLFormatter
 
 # Mapping of file extensions to formatters
 FORMATTERS = {
-    ".py": PythonFormatter(),
-    ".js": JavaScriptFormatter(),
-    ".jsx": JavaScriptFormatter(),
-    ".ts": TypeScriptFormatter(),
-    ".tsx": TypeScriptFormatter(),
-    ".json": JSONFormatter(),
-    ".toml": TOMLFormatter(),
-    ".yaml": YAMLFormatter(),
-    ".md": MarkdownFormatter(),
+    '.py': PythonFormatter(),
+    '.js': JavaScriptFormatter(),
+    '.jsx': JavaScriptFormatter(),
+    '.ts': TypeScriptFormatter(),
+    '.tsx': TypeScriptFormatter(),
+    '.json': JSONFormatter(),
+    '.toml': TOMLFormatter(),
+    '.yaml': YAMLFormatter(),
+    '.md': MarkdownFormatter(),
 }
 
 
-def get_formatter_for_file(path: Path) -> Optional[BaseFormatter]:
+def get_formatter_for_file(path: Path) -> BaseFormatter | None:
     """Get the appropriate formatter for a given file path."""
     return FORMATTERS.get(path.suffix)

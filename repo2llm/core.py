@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List, Optional, Set
 
 from pydantic import BaseModel, Field
 
@@ -9,11 +8,14 @@ from repo2llm.formatters import get_formatter_for_file
 
 class RepoConfig(BaseModel):
     """Configuration for repository processing."""
-    root_dir: Path
-    ignore_patterns: Set[str] = Field(default_factory=lambda: DEFAULT_IGNORE_PATTERNS.copy())
-    include_patterns: Optional[Set[str]] = None
 
-    def add_ignore_patterns(self, patterns: Set[str]) -> None:
+    root_dir: Path
+    ignore_patterns: set[str] = Field(
+        default_factory=lambda: DEFAULT_IGNORE_PATTERNS.copy()
+    )
+    include_patterns: set[str] | None = None
+
+    def add_ignore_patterns(self, patterns: set[str]) -> None:
         """Add additional ignore patterns to the existing ones."""
         self.ignore_patterns.update(patterns)
 
@@ -71,11 +73,11 @@ class RepoProcessor:
         Returns:
             str: Formatted repository contents.
         """
-        output: List[str] = []
+        output: list[str] = []
 
         try:
             # Get all files in the repository
-            for path in sorted(self.config.root_dir.rglob("*")):
+            for path in sorted(self.config.root_dir.rglob('*')):
                 rel_path = None
 
                 if not path.is_file() or self._should_ignore(path):
@@ -84,7 +86,10 @@ class RepoProcessor:
                 # If include patterns are specified, check if the file matches any
                 if self.config.include_patterns:
                     rel_path = path.relative_to(self.config.root_dir)
-                    if not any(rel_path.match(pattern) for pattern in self.config.include_patterns):
+                    if not any(
+                        rel_path.match(pattern)
+                        for pattern in self.config.include_patterns
+                    ):
                         continue
 
                 try:
@@ -97,7 +102,7 @@ class RepoProcessor:
                         continue
 
                     # Read and format file content
-                    with open(path, "r", encoding="utf-8") as f:
+                    with open(path, encoding='utf-8') as f:
                         content = f.read()
 
                     formatted_content = formatter.format_content(
@@ -107,9 +112,9 @@ class RepoProcessor:
                     output.append(formatted_content)
 
                 except Exception as e:
-                    output.append(f"\n# Error reading {rel_path}: {str(e)}\n")
+                    output.append(f'\n# Error reading {rel_path}: {e!s}\n')
 
         except Exception as e:
-            output.append(f"\n# Error processing repository: {str(e)}\n")
+            output.append(f'\n# Error processing repository: {e!s}\n')
 
-        return "\n".join(output)
+        return '\n'.join(output)
