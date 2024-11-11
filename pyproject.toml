@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "repo2llm"
-version = "0.2.2"
+version = "0.2.3"
 description = "A tool to easily share repository contents with LLMs through the clipboard."
 authors = [ "Forest Dussault <forestdussault@gmail.com>",]
 readme = "README.md"
