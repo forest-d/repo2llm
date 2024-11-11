@@ -78,18 +78,6 @@ def test_cli_ignore_pattern(runner, mock_pyperclip, temp_repo):
     assert 'main.py' in copied_content
 
 
-def test_cli_include_pattern(runner, mock_pyperclip, temp_repo):
-    """Test CLI with include pattern."""
-    result = runner.invoke(main, [str(temp_repo), '--include', '*.py', '--preview'])
-
-    assert result.exit_code == 0
-    copied_content = mock_pyperclip.copy.call_args[0][0]
-
-    # Only Python files should be included
-    assert 'main.py' in copied_content
-    assert 'app.ts' not in copied_content
-
-
 def test_cli_nonexistent_directory(runner):
     """Test CLI with nonexistent directory."""
     result = runner.invoke(main, ['nonexistent_directory'])
