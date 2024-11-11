@@ -57,7 +57,7 @@ def test_cli_no_preview(runner, mock_pyperclip, temp_repo):
 
 def test_cli_custom_preview_length(runner, mock_pyperclip, temp_repo):
     """Test CLI with custom preview length."""
-    result = runner.invoke(main, [str(temp_repo), '--preview-length', '10'])
+    result = runner.invoke(main, [str(temp_repo), '--preview-length', '10', '--preview'])
 
     assert result.exit_code == 0
     assert 'Preview of copied content:' in result.output
