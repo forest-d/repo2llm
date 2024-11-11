@@ -23,7 +23,7 @@ console = Console()
     multiple=True,
     help='Additional patterns to ignore (e.g., "*.txt", "temp/")',
 )
-@click.option('--preview/--no-preview', default=True, help='Show preview of copied content')
+@click.option('--preview/--no-preview', default=False, help='Show preview of copied content')
 @click.option('--preview-length', default=200, help='Length of preview in characters')
 @click.option(
     '--config',
