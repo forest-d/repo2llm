@@ -76,6 +76,21 @@ The config file supports:
 
 Contributions are welcome, feel free to submit a PR.
 
+## Release
+
+To release a new version, run the `scripts/version.py` script:
+
+```bash
+# For a patch update (0.1.0 -> 0.1.1)
+poetry run python scripts/version.py patch --tag
+
+# For a minor update (0.1.1 -> 0.2.0)
+poetry run python scripts/version.py minor --tag
+
+# For a major update (0.2.0 -> 1.0.0)
+poetry run python scripts/version.py major --tag
+```
+
 ## License
 
 MIT
