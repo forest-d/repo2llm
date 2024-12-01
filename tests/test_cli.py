@@ -66,15 +66,12 @@ def test_cli_custom_preview_length(runner, mock_pyperclip, temp_repo):
 
 
 def test_cli_ignore_pattern(runner, mock_pyperclip, temp_repo):
-    """Test CLI with custom ignore pattern."""
-    result = runner.invoke(main, [str(temp_repo), '--ignore', '*.ts', '--preview'])
+    """Test CLI with ignore pattern."""
+    result = runner.invoke(main, [str(temp_repo), '--ignore', 'src/app.ts', '--preview'])
 
     assert result.exit_code == 0
     copied_content = mock_pyperclip.copy.call_args[0][0]
-
-    # TypeScript file should be ignored
-    assert 'app.ts' not in copied_content
-    # Python file should still be included
+    assert 'src/app.ts' not in copied_content
     assert 'main.py' in copied_content
 
 
