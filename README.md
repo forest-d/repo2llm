@@ -62,12 +62,13 @@ The config file supports:
 - One pattern per line
 - Comments (lines starting with #)
 
+## Development
 
-## Contributing
+### Tests
 
-Contributions are welcome, feel free to submit a PR.
+To run the test suite, run `poetry run pytest`
 
-## Release
+### Release
 
 To release a new version, run the `scripts/version.py` script:
 
@@ -81,3 +82,7 @@ poetry run python scripts/version.py minor --tag
 # For a major update (0.2.0 -> 1.0.0)
 poetry run python scripts/version.py major --tag
 ```
+
+### Contributing
+
+Contributions are welcome, feel free to submit a PR.
