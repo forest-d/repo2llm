@@ -95,3 +95,24 @@ def test_cli_error_handling(mock_print, runner, temp_repo):
         assert result.exit_code != 0
         # Check that error message is printed
         assert any('Error' in str(call) for call in mock_print.call_args_list)
+
+
+@patch('repo2llm.cli.get_version')
+def test_cli_version_flag(mock_get_version, runner):
+    """Test that --version flag prints version and exits."""
+    mock_get_version.return_value = '1.0.0'
+
+    # Test long version flag
+    result = runner.invoke(main, ['--version'])
+    assert result.exit_code == 0
+    assert 'repo2llm version 1.0.0' in result.output
+
+    # Test short version flag
+    result = runner.invoke(main, ['-v'])
+    assert result.exit_code == 0
+    assert 'repo2llm version 1.0.0' in result.output
+
+    # Version flag should work without directory argument
+    result = runner.invoke(main, ['-v'])
+    assert result.exit_code == 0
+    assert 'repo2llm version 1.0.0' in result.output

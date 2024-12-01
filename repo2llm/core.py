@@ -1,10 +1,19 @@
 from fnmatch import fnmatch
+from importlib import metadata
 from pathlib import Path
 
 from pydantic import BaseModel, Field
 
 from repo2llm.constants import DEFAULT_IGNORE_PATTERNS
 from repo2llm.formatters import get_formatter_for_file
+
+
+def get_version() -> str:
+    """Get the current version of repo2llm."""
+    try:
+        return metadata.version('repo2llm')
+    except metadata.PackageNotFoundError:
+        return 'unknown'
 
 
 class RepoConfig(BaseModel):

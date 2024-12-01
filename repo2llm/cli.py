@@ -6,7 +6,7 @@ from rich.console import Console
 from rich.panel import Panel
 
 from repo2llm.config import find_config_file, load_config_file
-from repo2llm.core import RepoConfig, RepoProcessor
+from repo2llm.core import RepoConfig, RepoProcessor, get_version
 
 console = Console()
 
@@ -16,6 +16,7 @@ console = Console()
     'directory',
     type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
     default=Path.cwd(),
+    required=False,
 )
 @click.option(
     '--ignore',
@@ -31,18 +32,24 @@ console = Console()
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
     help='Path to config file (defaults to .repo2llm in repository root)',
 )
+@click.option('--version', '-v', is_flag=True, help='Show the version and exit')
 def main(
     directory: Path,
     ignore: list[str],
     preview: bool,
     preview_length: int,
     config: Path | None,
+    version: bool,
 ) -> None:
     """
     Copy repository contents to clipboard for sharing with LLMs.
 
     DIRECTORY is the root directory to process (defaults to current directory)
     """
+    if version:
+        console.print(f'repo2llm version {get_version()}')
+        return
+
     try:
         # Create config with base ignore patterns
         repo_config = RepoConfig(root_dir=directory)
