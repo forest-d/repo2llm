@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
+from repo2llm.config import ConfigFileSettings, find_config_file, load_config_file
 from repo2llm.core import RepoConfig, RepoProcessor
 
 
@@ -315,3 +316,139 @@ def test_repo_processor_directory_wildcard(temp_repo: Path):
     assert 'nested/deep/test.py' not in output
     # Verify other files still included
     assert 'src/main.py' in output
+
+
+def test_repo_processor_trailing_slash_directory_pattern(temp_repo: Path):
+    """Test that directory patterns with trailing slashes correctly ignore directories and their contents."""
+    # Create test directories and files
+    output_dir = temp_repo / 'output'
+    output_dir.mkdir()
+
+    # Add files in output directory
+    output_file = output_dir / 'result.txt'
+    output_file.write_text('output results')
+
+    # Add nested directory and files
+    nested_output = output_dir / 'nested'
+    nested_output.mkdir()
+    nested_file = nested_output / 'nested_result.txt'
+    nested_file.write_text('nested results')
+
+    # Create a file with similar name but not in the directory
+    (temp_repo / 'output_file.txt').write_text('not in output directory')
+
+    # Configure with directory pattern ending with slash
+    config = RepoConfig(root_dir=temp_repo)
+    config.add_ignore_patterns({'output/'})  # Directory pattern with trailing slash
+    processor = RepoProcessor(config)
+
+    output, count = processor.process_repository()
+
+    # Output directory and all contents should be ignored
+    assert 'output/result.txt' not in output
+    assert 'output/nested/nested_result.txt' not in output
+
+    # File with similar name but not in directory should be included
+    assert 'output_file.txt' in output
+
+
+def test_repo_processor_directory_without_trailing_slash(temp_repo: Path):
+    """Test that directory patterns without trailing slashes correctly ignore directories and their contents."""
+    # Create test directories and files
+    src_dir = temp_repo / 'src'
+    src_dir.mkdir(exist_ok=True)
+
+    nested_dir = src_dir / 'nested'
+    nested_dir.mkdir()
+    test_file = nested_dir / 'test.py'
+    test_file.write_text("print('test')")
+
+    # Configure with directory pattern without trailing slash
+    config = RepoConfig(root_dir=temp_repo)
+    config.add_ignore_patterns({'src/nested'})  # No trailing slash
+    processor = RepoProcessor(config)
+
+    output, count = processor.process_repository()
+
+    # Directory and its contents should be ignored
+    assert 'src/nested/test.py' not in output
+
+
+def test_repo_processor_config_file_with_directory_patterns(temp_repo: Path, monkeypatch):
+    """Test that directory patterns from config file are properly applied."""
+    # Create test file structure
+    src_dir = temp_repo / 'src'
+    src_dir.mkdir(exist_ok=True)
+    (src_dir / 'main.py').write_text("print('Hello')")
+
+    # Create output directory with files
+    output_dir = temp_repo / 'output'
+    output_dir.mkdir()
+    (output_dir / 'build.log').write_text('build log')
+
+    # Create temp directory with files
+    temp_dir = temp_repo / 'temp'
+    temp_dir.mkdir()
+    (temp_dir / 'temp.txt').write_text('temp file')
+
+    # Create mock config file
+    config_file = temp_repo / '.repo2llm'
+    config_file.write_text("""
+# Directories to ignore
+output/
+temp/
+""")
+
+    # Use ConfigFileSettings to simulate config file loading
+    with patch('repo2llm.config.find_config_file') as mock_find:
+        mock_find.return_value = config_file
+        with patch('repo2llm.config.load_config_file') as mock_load:
+            mock_load.return_value = ConfigFileSettings(ignore={'output/', 'temp/'})
+
+            # Create a processor with the configured repo
+            config = RepoConfig(root_dir=temp_repo)
+            processor = RepoProcessor(config)
+
+            # Simulate CLI behavior by loading config
+            config_path = find_config_file(temp_repo)
+            config_settings = load_config_file(config_path)
+            config.add_ignore_patterns(config_settings.ignore)
+
+            # Process the repo
+            output, count = processor.process_repository()
+
+            # Directories in config should be ignored
+            assert 'output/build.log' not in output
+            assert 'temp/temp.txt' not in output
+
+            # Other files should be included
+            assert 'src/main.py' in output
+
+
+def test_repo_processor_nested_directory_patterns(temp_repo: Path):
+    """Test that nested directory patterns are handled correctly."""
+    # Create nested directories
+    src_dir = temp_repo / 'src'
+    src_dir.mkdir(exist_ok=True)
+
+    nested = src_dir / 'build' / 'output'
+    nested.mkdir(parents=True)
+    (nested / 'result.txt').write_text('build output')
+
+    # Create other build directory that should be ignored
+    other_build = temp_repo / 'build'
+    other_build.mkdir()
+    (other_build / 'output.txt').write_text('build output')
+
+    # Configure with directory patterns
+    config = RepoConfig(root_dir=temp_repo)
+    config.add_ignore_patterns({'build/'})  # Should ignore any directory named build
+    processor = RepoProcessor(config)
+
+    output, count = processor.process_repository()
+
+    # Directory at root level should be ignored
+    assert 'build/output.txt' not in output
+
+    # Nested directory with the same name should be ignored too
+    assert 'src/build/output/result.txt' not in output

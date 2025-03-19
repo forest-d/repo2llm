@@ -47,29 +47,64 @@ class RepoProcessor:
             rel_path_str = str(rel_path).replace('\\', '/')
 
             for pattern in self.config.ignore_patterns:
-                clean_pattern = pattern.rstrip('/')
-                if not clean_pattern:
+                # Skip empty patterns
+                if not pattern:
                     continue
 
-                # Handle exact matches
-                if rel_path_str == clean_pattern:
+                # Handle directory pattern (ending with /)
+                if pattern.endswith('/'):
+                    pattern_without_slash = pattern[:-1]
+
+                    # Case 1: Path is at the root level matching the pattern
+                    # e.g., pattern="build/" should match path="build/file.txt"
+                    if rel_path_str.startswith(pattern):
+                        return True
+
+                    # Case 2: Path contains a directory segment matching the pattern
+                    # e.g., pattern="build/" should match path="src/build/output/file.txt"
+                    path_parts = rel_path_str.split('/')
+                    for i in range(len(path_parts) - 1):  # -1 because we don't check the filename
+                        if path_parts[i] == pattern_without_slash:
+                            # Make sure it's used as a directory (has something after it)
+                            if i < len(path_parts) - 1:
+                                return True
+
+                    continue
+
+                # Case 3: Exact path match
+                if rel_path_str == pattern:
                     return True
 
-                # Handle directory matches
-                if rel_path_str.startswith(f'{clean_pattern}/'):
-                    return True
+                # Case 4: Path is subdirectory/file of a directory specified without trailing slash
+                # e.g., pattern="src/nested" should match path="src/nested/test.py"
+                if '/' in pattern and not pattern.endswith('*'):  # Looks like a directory path
+                    if rel_path_str.startswith(pattern + '/'):
+                        return True
 
-                # Handle wildcard matches
-                if fnmatch(rel_path_str, clean_pattern):
-                    return True
+                    # Handle parent directories specified as patterns
+                    # Build up path segments and compare
+                    segments = rel_path_str.split('/')
+                    current = ''
+                    for i, seg in enumerate(segments):
+                        if i > 0:
+                            current += '/'
+                        current += seg
 
-                # Handle directory wildcards ending with /
-                if pattern.endswith('/') and fnmatch(rel_path_str + '/', clean_pattern):
+                        # Check if current segment matches the pattern
+                        if current == pattern:
+                            return True
+
+                # Case 5: Wildcard pattern matching
+                if fnmatch(rel_path_str, pattern):
                     return True
 
             return False
 
         except ValueError:
+            return True
+        except ZeroDivisionError:
+            return True
+        except Exception:
             return True
 
     def process_repository(self) -> tuple[str, int]:
